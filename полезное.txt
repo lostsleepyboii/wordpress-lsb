@@ -1,0 +1,126 @@
+///////////////////////////////////////////////////////////
+
+* Частые плагины:
+	Advanced Custom Fields
+	Duplicate Post
+	Cyr-To-Lat
+	Contact Form 7
+
+* Иногда могу пригодиться:
+	SVG Support & Безопасный SVG
+
+* Оптимизация:
+	WP Super Cache
+	Smush
+	Autoptimize
+	Yoast SEO
+	ACF Content Analysis for Yoast SEO
+
+///////////////////////////////////////////////////////////
+
+* Просто полезно знать:
+	is_front_page() - Главная страница
+	is_singular() - Остальные страницы
+	<?php the_field('айди-поля', 2) ?> - Вывод кастомного поля на всех страницах (напр: для телефона, почты и т.д.)
+	<?php echo do_shortcode('сам шорткод из contacts form') ?> - Вывод формы из contacts form
+
+* Полезные строчки кода:
+	<?php echo bloginfo('template_url'); ?>/assets/ - Замена всех изображений на динамические
+
+	<?php bloginfo('name'); echo ' | '; bloginfo('description'); ?> - Правильный вывод заголовка
+
+	<?php wp_head(); ?> - Вставка стилей в хедере
+	<?php wp_footer(); ?> - Вставка скриптов в футере
+
+	<?php bloginfo('name'); ?> - Имя блога
+	<?php bloginfo('description'); ?> - Описание блога
+	<?php bloginfo('admin_email'); ?> - Email автора блога
+
+	<?php echo get_home_url(); ?> - Путь до главной страницы
+	<?php echo get_template_directory_uri(); ?> - Путь для файлов
+
+* Вывод кастомного лого:
+	<?php 
+		$custom_logo__url = wp_get_attachment_image_src(get_theme_mod('custom_logo'), 'full'); 
+	?>
+	<img class="logo" src="<?php echo $custom_logo__url[0]; ?>" alt="Center Logistic">
+
+* Вывод меню:
+	<?php 
+		$названиеМеню = array(
+			'menu' => 'Main', 
+			'container' => false,
+			'echo' => '',
+			'items_wrap' => '%3$s',
+			'depth' => 1
+		);
+		echo strip_tags( wp_nav_menu( $названиеМеню ), '<a>' );
+	?>
+
+* Вывод изображений:
+	<?php 
+		$image = get_field('айди-филда');
+		if (!empty($image)) {
+	?>
+		<img 
+		class="lazy" 
+		src="/" 
+		data-src="<?php echo $image['url']; ?>" 
+		alt="<?php echo $image['alt']; ?>" 
+		width="<?php echo $image['width']; ?>" 
+		height="<?php echo $image['height']; ?>">
+	<?php
+	}
+	?>
+
+* Хлебные крошки (требуется плагин Yoast):
+	<?php
+		if ( function_exists('yoast_breadcrumb') ) {
+			yoast_breadcrumb( '<div class="breadcrumps">','</div>' );
+		}
+	?>
+
+* Вывод записей:
+	<?php 
+		// параметры по умолчанию
+		$posts = get_posts( array(
+			'numberposts' => -1,
+			'category_name' => 'slider',
+			'orderby'     => 'date',
+			'order'       => 'ASC',
+			'post_type'   => 'post',
+			'suppress_filters' => true, // подавление работы фильтров изменения SQL запроса
+		) );
+
+		foreach ( $posts as $post ) {
+			setup_postdata ($post);
+				?>
+
+					* полезный код для динамического вывода постов:
+					<?php the_post_thumbnail_url('full'); ?>'); - обложка поста
+					<?php the_post_thumbnail_url('full'); ?>'); - ссылка на обложку поста
+					<?php the_title(); ?> - название поста
+					<?php the_permalink(); ?> - ссылка поста
+					<?php echo get_the_date('j F, Y'); ?> - дата поста
+
+					* вывод обрезанного по словам описания поста:
+					<?php 
+						$content = get_the_content();
+						$trimmed_content = wp_trim_words( $content, 50, '');
+					?>
+					<?php echo $trimmed_content; ?>
+
+				<?php
+		}
+
+		wp_reset_postdata(); // сброс
+	?>
+
+* Вывод категорий:
+	<?php
+		$all_categories = get_categories('hide_empty=0&exclude=1');
+		$category_link_array = array();
+		foreach( $all_categories as $single_cat ){
+	?>
+		<li><a href="<?php echo get_category_link($single_cat->term_id); ?>"><?php echo $single_cat->name ?></a></li>
+	<?php } ?>
